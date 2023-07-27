@@ -6,14 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1012</width>
+    <width>1274</width>
     <height>797</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGraphicsView" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>1251</width>
+      <height>711</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="openDicomFiles">
    <property name="text">

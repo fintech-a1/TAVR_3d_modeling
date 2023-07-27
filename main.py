@@ -1,11 +1,12 @@
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QGraphicsScene, QGraphicsPixmapItem
 from PySide6.QtCore import QThread
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QPixmap
 
 import tkinter as tk
 import matplotlib.pyplot as plt
 import tkinter.filedialog
+import qimage2ndarray
 
 import pydicom
 import sys
@@ -45,6 +46,18 @@ class mainWindow(QMainWindow):
         print(filelist)
         dcm = pydicom.dcmread(filelist)
         img = dcm.pixel_array
+
+        qimage_var = qimage2ndarray.array2qimage(img, normalize=True)
+
+        # self.mainWindow.label.setPixmap(QPixmap(qimage_var))
+
+        ### graphics view
+        scene = QGraphicsScene()
+        scene.addPixmap(QPixmap(qimage_var))
+
+        self.mainWindow.graphicsView.setScene(scene)
+
+
 
 
 
