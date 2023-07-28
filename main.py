@@ -21,7 +21,6 @@ class mainWindow(QMainWindow):
         self.mainwindow = loader.load('mainWindow.ui')
         self.mainwindow.show()
         self.initialize()
-        self.setMouseTracking(False)
 
     def initialize(self):
         openAction = QAction('Open', self)
