@@ -1,5 +1,5 @@
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QGraphicsScene, QGraphicsPixmapItem
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsObject, QGraphicsSceneMouseEvent
 from PySide6.QtCore import QThread
 from PySide6.QtGui import QAction, QPixmap
 
@@ -9,6 +9,7 @@ import tkinter.filedialog
 import qimage2ndarray
 
 import pydicom
+# import PySide6
 import sys
 import os
 
@@ -17,9 +18,10 @@ class mainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         loader = QUiLoader()
-        self.mainWindow = loader.load('mainWindow.ui')
+        self.mainwindow = loader.load('mainWindow.ui')
+        self.mainwindow.show()
         self.initialize()
-        self.mainWindow.show()
+        self.setMouseTracking(False)
 
     def initialize(self):
         openAction = QAction('Open', self)
@@ -28,7 +30,7 @@ class mainWindow(QMainWindow):
         exitAction = QAction('Exit',self)
         exitAction.triggered.connect(QApplication.quit)
 
-        menubar = self.mainWindow.menuBar()
+        menubar = self.mainwindow.menuBar()
         filemenu = menubar.addMenu('File')
         filemenu.addAction(openAction)
         filemenu.addSeparator()
@@ -52,10 +54,28 @@ class mainWindow(QMainWindow):
         # self.mainWindow.label.setPixmap(QPixmap(qimage_var))
 
         ### graphics view
-        scene = QGraphicsScene()
+        # scene = QGraphicsScene()
+        scene = SceneManager()
         scene.addPixmap(QPixmap(qimage_var))
 
-        self.mainWindow.graphicsView.setScene(scene)
+        self.mainwindow.graphicsView.setScene(scene)
+        # scene.signalMousePos.connect(prnt)
+
+
+class SceneManager(QGraphicsScene):
+    def __init__(self):
+        super().__init__()
+
+    def mouseMoveEvent(self, event):
+        print('event!')
+        print('Mouse move : {}, {}'.format(event.scenePos().x(), event.scenePos().y()))
+
+    def mousePressEvent(self, event):
+        print('mouse Pressed')
+        print('MOuse pressed : {}, {}'.format(event.scenePos().x(), event.scenePos().y()))
+
+
+
 
 
 
