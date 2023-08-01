@@ -25,7 +25,7 @@ class mainWindow(QMainWindow):
         self.mainwindow = loader.load('mainWindow.ui')
         self.mainwindow.show()
         self.initialize()
-        print('mainWindow - __init__ Thread Name : ', QThread.currentThread())
+        # print('mainWindow - __init__ Thread Name : ', QThread.currentThread())
 
     def initialize(self):
         openAction = QAction('Open', self)
@@ -40,7 +40,7 @@ class mainWindow(QMainWindow):
         filemenu.addSeparator()
         filemenu.addAction(exitAction)
 
-        print('mainWindow - initialize Thread Name : ',QThread.currentThread())
+        # print('mainWindow - initialize Thread Name : ',QThread.currentThread())
 
     def openDicomFiles(self):
         print('File open clicked')
@@ -48,7 +48,7 @@ class mainWindow(QMainWindow):
         filename = tk.filedialog.askopenfilename(initialdir='C:/', title='open File', filetypes=(('DICOM file','*.dcm'),('all files','*.*')))
         openFileList = filename
 
-        print('mainWindow - openDicomFiles Thread Name : ', QThread.currentThread())
+        # print('mainWindow - openDicomFiles Thread Name : ', QThread.currentThread())
 
         self.readDicomFile(openFileList)
 
@@ -64,31 +64,37 @@ class mainWindow(QMainWindow):
 
         ### graphics view
         scene = SceneManager(self)
-        scene.start()
+        # scene.start()
         scene.addPixmap(QPixmap(qimage_var))
 
 
-        print('mainWindow - readDicomFile Thread Name : ', QThread.currentThread())
+        # print('mainWindow - readDicomFile Thread Name : ', QThread.currentThread())
 
         self.mainwindow.graphicsView.setScene(scene)
 
 
 
-class SceneManager(QGraphicsScene, QThread):
+class SceneManager(QGraphicsScene):
     def __init__(self, parent):
         super().__init__(parent)
-        print('Start Scenemanager Threading')
-        print('sceneManager - __init__ Thread Name : ',QThread.currentThread())
+        # print('Start Scenemanager Threading')
+        # print('sceneManager - __init__ Thread Name : ',QThread.currentThread())
 
     def mouseMoveEvent(self, event):
         # print('event!')
-        print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
+        # print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
         print('Mouse move : {}, {}'.format(event.scenePos().x(), event.scenePos().y()))
 
     def mousePressEvent(self, event):
         # print('mouse Pressed')
-        print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
+        # print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
         print('MOuse pressed : {}, {}'.format(event.scenePos().x(), event.scenePos().y()))
+
+    def wheelEvent(self, event):
+        if QApplication.keyboardModifiers() == Qt.ControlModifier:
+            view_pos = event.pos()
+            scene_pos = self.mapToScene(view_pos)
+            self.centerOn(scene_pos)
 
 
 
