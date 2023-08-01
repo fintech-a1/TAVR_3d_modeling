@@ -9,9 +9,13 @@ import tkinter.filedialog
 import qimage2ndarray
 
 import pydicom
+import threading
 # import PySide6
 import sys
 import os
+
+
+
 
 
 class mainWindow(QMainWindow):
@@ -21,6 +25,7 @@ class mainWindow(QMainWindow):
         self.mainwindow = loader.load('mainWindow.ui')
         self.mainwindow.show()
         self.initialize()
+        print('mainWindow - __init__ Thread Name : ', QThread.currentThread())
 
     def initialize(self):
         openAction = QAction('Open', self)
@@ -35,13 +40,18 @@ class mainWindow(QMainWindow):
         filemenu.addSeparator()
         filemenu.addAction(exitAction)
 
+        print('mainWindow - initialize Thread Name : ',QThread.currentThread())
+
     def openDicomFiles(self):
         print('File open clicked')
 
         filename = tk.filedialog.askopenfilename(initialdir='C:/', title='open File', filetypes=(('DICOM file','*.dcm'),('all files','*.*')))
         openFileList = filename
 
+        print('mainWindow - openDicomFiles Thread Name : ', QThread.currentThread())
+
         self.readDicomFile(openFileList)
+
 
     def readDicomFile(self, filelist):
         print(filelist)
@@ -53,24 +63,31 @@ class mainWindow(QMainWindow):
         # self.mainWindow.label.setPixmap(QPixmap(qimage_var))
 
         ### graphics view
-        # scene = QGraphicsScene()
-        scene = SceneManager()
+        scene = SceneManager(self)
+        scene.start()
         scene.addPixmap(QPixmap(qimage_var))
 
+
+        print('mainWindow - readDicomFile Thread Name : ', QThread.currentThread())
+
         self.mainwindow.graphicsView.setScene(scene)
-        # scene.signalMousePos.connect(prnt)
 
 
-class SceneManager(QGraphicsScene):
-    def __init__(self):
-        super().__init__()
+
+class SceneManager(QGraphicsScene, QThread):
+    def __init__(self, parent):
+        super().__init__(parent)
+        print('Start Scenemanager Threading')
+        print('sceneManager - __init__ Thread Name : ',QThread.currentThread())
 
     def mouseMoveEvent(self, event):
-        print('event!')
+        # print('event!')
+        print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
         print('Mouse move : {}, {}'.format(event.scenePos().x(), event.scenePos().y()))
 
     def mousePressEvent(self, event):
-        print('mouse Pressed')
+        # print('mouse Pressed')
+        print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
         print('MOuse pressed : {}, {}'.format(event.scenePos().x(), event.scenePos().y()))
 
 
@@ -79,7 +96,12 @@ class SceneManager(QGraphicsScene):
 
 
 
+if __name__ == "__main__" :
+    app = QApplication(sys.argv)
+    main = mainWindow()
 
-app = QApplication(sys.argv)
-main = mainWindow()
-sys.exit(app.exec())
+    # threadScene = threading.Thread(target=SceneManager)
+
+    # threadScene.start()
+
+    sys.exit(app.exec())
