@@ -63,7 +63,7 @@ class mainWindow(QMainWindow):
         # self.mainWindow.label.setPixmap(QPixmap(qimage_var))
 
         ### graphics view
-        scene = SceneManager(self)
+        scene = SceneManager(qimage_var)
         # scene.start()
         scene.addPixmap(QPixmap(qimage_var))
 
@@ -75,26 +75,26 @@ class mainWindow(QMainWindow):
 
 
 class SceneManager(QGraphicsScene):
-    def __init__(self, parent):
-        super().__init__(parent)
+    def __init__(self, img):
+        super().__init__()
+
+        # parent.mainwindow.graphicsView.setScene(img_pixel)
         # print('Start Scenemanager Threading')
         # print('sceneManager - __init__ Thread Name : ',QThread.currentThread())
 
     def mouseMoveEvent(self, event):
         # print('event!')
         # print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
-        print('Mouse move : {}, {}'.format(event.scenePos().x(), event.scenePos().y()))
+        print('Mouse move : {}, {} / {}'.format(event.scenePos().x(), event.scenePos().y(), event))
 
     def mousePressEvent(self, event):
         # print('mouse Pressed')
         # print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
-        print('MOuse pressed : {}, {}'.format(event.scenePos().x(), event.scenePos().y()))
+        print('MOuse pressed : {}, {} / {}'.format(event.scenePos().x(), event.scenePos().y(), event))
 
     def wheelEvent(self, event):
-        if QApplication.keyboardModifiers() == Qt.ControlModifier:
-            view_pos = event.pos()
-            scene_pos = self.mapToScene(view_pos)
-            self.centerOn(scene_pos)
+        print('Mouse Wheel Event : {} / {}', event.delta(), event)
+
 
 
 
@@ -107,7 +107,6 @@ if __name__ == "__main__" :
     main = mainWindow()
 
     # threadScene = threading.Thread(target=SceneManager)
-
     # threadScene.start()
 
     sys.exit(app.exec())
