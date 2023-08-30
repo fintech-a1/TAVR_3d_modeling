@@ -1,7 +1,7 @@
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QGraphicsScene, QGraphicsPixmapItem, QGraphicsObject, QGraphicsSceneMouseEvent
 from PySide6.QtCore import QThread
-from PySide6.QtGui import QAction, QPixmap
+from PySide6.QtGui import QAction, QPixmap, QPainter
 from PySide6 import QtQuick
 
 import tkinter as tk
@@ -15,8 +15,8 @@ import PySide6
 import sys
 import os
 
-
-
+# loader = QUiLoader()
+# from_class = loader.load('mainWindow.ui')
 
 
 class mainWindow(QMainWindow):
@@ -56,33 +56,40 @@ class mainWindow(QMainWindow):
 
     def readDicomFile(self, filelist):
         print(filelist)
-        dcm = pydicom.dcmread(filelist)
-        img = dcm.pixel_array
+        self.dcm = pydicom.dcmread(filelist)
+        self.img = self.dcm.pixel_array
 
-        qimage_var = qimage2ndarray.array2qimage(img, normalize=True)
+        self.qimage_var = qimage2ndarray.array2qimage(self.img, normalize=True)
 
-        # self.mainWindow.label.setPixmap(QPixmap(qimage_var))
+        # self.mainwindow.label.setPixmap(QPixmap(self.qimage_var))
 
-        ### graphics view
-        scene = SceneManager(qimage_var)
+        ## graphics view
+        self.scene = SceneManager(self.qimage_var)
         # scene.start()
-        # scene = QGraphicsScene()
-        scene.addPixmap(QPixmap(qimage_var))
+        # self.scene = QGraphicsScene()
+        self.scene.addPixmap(QPixmap(self.qimage_var))
 
-        self.mainwindow.graphicsView.setScene(scene)
+        self.mainwindow.graphicsView.setScene(self.scene)
 
     # def mouseMoveEvent(self, event):
-    #     # print('event!')
-    #     # print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
-    #     print('Mouse move : {}, {} / {}'.format(event.scenePos().x(), event.scenePos().y(), event))
+    #     print('mouse event')
+    #     if self.x is None:
+    #         self.x = event.x()
+    #         self.y = event.y()
+    #         return
     #
-    # def mousePressEvent(self, event):
-    #     # print('mouse Pressed')
-    #     # print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
-    #     print('MOuse pressed : {}, {} / {}'.format(event.scenePos().x(), event.scenePos().y(), event))
+    #     # painter = QPainter(self.label.pixmap())
+    #     # painter.setPen(QPen(Qt.blue, 5, Qt.SolidLine))
+    #     # painter.drawLine(self.x, self.y, event.x(), event.y())
+    #     # painter.end()
+    #     # self.update()
     #
-    # def wheelEvent(self, event):
-    #     print('Mouse Wheel Event : {} / {}', event.delta(), event)
+    #     self.x = event.x()
+    #     self.y = event.y()
+    #
+    #     print(self.x, self.y)
+
+
 
 
 
@@ -101,6 +108,18 @@ class SceneManager(QGraphicsScene, QThread):
         # print('event!')
         print('scenemanager - mouseMove Thread Name : ', QThread.currentThread())
         print('Mouse move : {}, {} / {}'.format(event.scenePos().x(), event.scenePos().y(), event))
+        if self.x is None :
+            self.x = event.x()
+            self.y = event.y()
+            return
+
+        painter = QPainter(self.addPixmap())
+        painter.drawLine(self.x, self.y, event.x(), event.y())
+        painter.end()
+        mainWindow.graphicsView.setScene()
+
+        self.x = event.x()
+        self.y = event.y()
 
     def mousePressEvent(self, event):
         # print('mouse Pressed')
